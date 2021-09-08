@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { CreateCoffeeDto } from './dto/create-coffee.dto';
+import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { Coffee } from './entities/coffee.entity';
 
 @Injectable()
@@ -16,22 +18,36 @@ export class CoffeesService {
     return this.coffees;
   }
 
-  findOne(id: string): Coffee {
-    return this.coffees.find((coffee) => coffee.id === +id);
+  findOne(id: number): Coffee {
+    return this.coffees.find((coffee) => coffee.id === id);
   }
 
-  create(coffee: Coffee): Coffee {
+  create(createCoffeeDto: CreateCoffeeDto): Coffee {
+    const coffee = {
+      id: Math.random(),
+      ...createCoffeeDto,
+    };
+
     this.coffees.push(coffee);
     return coffee;
   }
 
-  update(id: string, coffee: Coffee): Coffee {
-    const index = this.coffees.findIndex((c) => c.id === +id);
-    this.coffees[index] = coffee;
-    return coffee;
+  update(id: number, updateCoffeeDto: UpdateCoffeeDto): Coffee {
+    const coffee = this.findOne(id);
+    const newCoffee: Coffee = {
+      ...coffee,
+      ...updateCoffeeDto,
+    };
+
+    const findIndex = this.coffees.findIndex(
+      (coffee) => coffee.id === Number(id),
+    );
+
+    this.coffees[findIndex] = newCoffee;
+    return newCoffee;
   }
 
-  delete(id: string): void {
+  delete(id: number): void {
     const index = this.coffees.findIndex((c) => c.id === +id);
     this.coffees.splice(index, 1);
   }
