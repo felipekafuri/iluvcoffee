@@ -15,6 +15,9 @@ export class Coffee {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  description: string;
+
   @Column()
   brand: string;
 
@@ -23,4 +26,7 @@ export class Coffee {
     cascade: true, // ['insert']
   })
   flavors: Flavor[];
+
+  @Column({ default: 0 })
+  recommendations: number;
 }
