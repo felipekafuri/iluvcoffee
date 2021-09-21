@@ -8,6 +8,8 @@ import { Coffee } from './entities/coffee.entity';
 import { Flavor } from './entities/flavor.entity';
 import { Event } from '../events/entities/event.entity';
 import { COFFEE_BRANDS } from './coffees.constants';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import coffeesConfig from './config/coffees.config';
 
 @Injectable()
 export class CoffeesService {
@@ -19,8 +21,10 @@ export class CoffeesService {
     private readonly connection: Connection,
     @Inject(COFFEE_BRANDS)
     private readonly coffeeBrands: string[],
+    @Inject(coffeesConfig.KEY)
+    private readonly coffeesConfiguration: ConfigType<typeof coffeesConfig>,
   ) {
-    console.log('CoffeesService instantiated');
+    console.log(coffeesConfiguration.foo);
   }
 
   async findAll(paginationQuery: PaginationQueryDto): Promise<Coffee[]> {
@@ -95,7 +99,9 @@ export class CoffeesService {
     return this.flavorRepository.create({ name });
   }
 
-  async recommendCoffee(coffee: Coffee) {
+  async recommendCoffee(id: number) {
+    const coffee = await this.findOne(id);
+
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
